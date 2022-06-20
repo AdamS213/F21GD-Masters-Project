@@ -33,6 +33,14 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                     ""expectedControlType"": ""Axis"",
                     ""processors"": """",
                     ""interactions"": """"
+                },
+                {
+                    ""name"": ""focusOnPlayer"",
+                    ""type"": ""Button"",
+                    ""id"": ""ef7766f7-31f4-41ea-91ad-031f31004ce3"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
                 }
             ],
             ""bindings"": [
@@ -52,18 +60,7 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                     ""id"": ""19c2c9fa-0afb-42d0-beae-97595f7e5282"",
                     ""path"": ""<Keyboard>/w"",
                     ""interactions"": """",
-                    ""processors"": ""Clamp(max=1)"",
-                    ""groups"": """",
-                    ""action"": ""move"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": ""up"",
-                    ""id"": ""b401b1b9-a16f-43ea-9cae-376a1524930a"",
-                    ""path"": ""<Keyboard>/upArrow"",
-                    ""interactions"": """",
-                    ""processors"": ""Clamp(max=1)"",
+                    ""processors"": """",
                     ""groups"": """",
                     ""action"": ""move"",
                     ""isComposite"": false,
@@ -74,18 +71,7 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                     ""id"": ""ff923488-f834-4e78-869f-9ba7909cd98a"",
                     ""path"": ""<Keyboard>/s"",
                     ""interactions"": """",
-                    ""processors"": ""Clamp(min=-1)"",
-                    ""groups"": """",
-                    ""action"": ""move"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": ""down"",
-                    ""id"": ""357bf20c-b3ec-4908-b87f-6d2b9f5be306"",
-                    ""path"": ""<Keyboard>/downArrow"",
-                    ""interactions"": """",
-                    ""processors"": ""Clamp(min=-1)"",
+                    ""processors"": """",
                     ""groups"": """",
                     ""action"": ""move"",
                     ""isComposite"": false,
@@ -96,18 +82,7 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                     ""id"": ""280263dd-7a80-42b5-af95-7b554facab12"",
                     ""path"": ""<Keyboard>/a"",
                     ""interactions"": """",
-                    ""processors"": ""Clamp(min=-1)"",
-                    ""groups"": """",
-                    ""action"": ""move"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": ""left"",
-                    ""id"": ""e7d89901-1b6e-4fbc-8995-e9c70117025b"",
-                    ""path"": ""<Keyboard>/leftArrow"",
-                    ""interactions"": """",
-                    ""processors"": ""Clamp(min=-1)"",
+                    ""processors"": """",
                     ""groups"": """",
                     ""action"": ""move"",
                     ""isComposite"": false,
@@ -118,18 +93,7 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                     ""id"": ""2d3f4575-111d-4a64-9fe6-304e43573151"",
                     ""path"": ""<Keyboard>/d"",
                     ""interactions"": """",
-                    ""processors"": ""Clamp(max=1)"",
-                    ""groups"": """",
-                    ""action"": ""move"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": ""right"",
-                    ""id"": ""63ec3b90-3fc3-4324-b2f4-1c525a24b571"",
-                    ""path"": ""<Keyboard>/rightArrow"",
-                    ""interactions"": """",
-                    ""processors"": ""Clamp(max=1)"",
+                    ""processors"": """",
                     ""groups"": """",
                     ""action"": ""move"",
                     ""isComposite"": false,
@@ -167,6 +131,17 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                     ""action"": ""rotate"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""a7a3da9e-2492-416e-b1be-eabc00d065d3"",
+                    ""path"": ""<Keyboard>/c"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""focusOnPlayer"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -177,6 +152,7 @@ public class @PlayerControls : IInputActionCollection, IDisposable
         m_Camera = asset.FindActionMap("Camera", throwIfNotFound: true);
         m_Camera_move = m_Camera.FindAction("move", throwIfNotFound: true);
         m_Camera_rotate = m_Camera.FindAction("rotate", throwIfNotFound: true);
+        m_Camera_focusOnPlayer = m_Camera.FindAction("focusOnPlayer", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -228,12 +204,14 @@ public class @PlayerControls : IInputActionCollection, IDisposable
     private ICameraActions m_CameraActionsCallbackInterface;
     private readonly InputAction m_Camera_move;
     private readonly InputAction m_Camera_rotate;
+    private readonly InputAction m_Camera_focusOnPlayer;
     public struct CameraActions
     {
         private @PlayerControls m_Wrapper;
         public CameraActions(@PlayerControls wrapper) { m_Wrapper = wrapper; }
         public InputAction @move => m_Wrapper.m_Camera_move;
         public InputAction @rotate => m_Wrapper.m_Camera_rotate;
+        public InputAction @focusOnPlayer => m_Wrapper.m_Camera_focusOnPlayer;
         public InputActionMap Get() { return m_Wrapper.m_Camera; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -249,6 +227,9 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                 @rotate.started -= m_Wrapper.m_CameraActionsCallbackInterface.OnRotate;
                 @rotate.performed -= m_Wrapper.m_CameraActionsCallbackInterface.OnRotate;
                 @rotate.canceled -= m_Wrapper.m_CameraActionsCallbackInterface.OnRotate;
+                @focusOnPlayer.started -= m_Wrapper.m_CameraActionsCallbackInterface.OnFocusOnPlayer;
+                @focusOnPlayer.performed -= m_Wrapper.m_CameraActionsCallbackInterface.OnFocusOnPlayer;
+                @focusOnPlayer.canceled -= m_Wrapper.m_CameraActionsCallbackInterface.OnFocusOnPlayer;
             }
             m_Wrapper.m_CameraActionsCallbackInterface = instance;
             if (instance != null)
@@ -259,6 +240,9 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                 @rotate.started += instance.OnRotate;
                 @rotate.performed += instance.OnRotate;
                 @rotate.canceled += instance.OnRotate;
+                @focusOnPlayer.started += instance.OnFocusOnPlayer;
+                @focusOnPlayer.performed += instance.OnFocusOnPlayer;
+                @focusOnPlayer.canceled += instance.OnFocusOnPlayer;
             }
         }
     }
@@ -267,5 +251,6 @@ public class @PlayerControls : IInputActionCollection, IDisposable
     {
         void OnMove(InputAction.CallbackContext context);
         void OnRotate(InputAction.CallbackContext context);
+        void OnFocusOnPlayer(InputAction.CallbackContext context);
     }
 }
