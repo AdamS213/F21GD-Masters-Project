@@ -4,16 +4,23 @@ using UnityEngine;
 
 public class Pathfinding 
 {
+
+    public static Pathfinding Instance { get; private set; }
     private Grid<Node> grid;
     private List<Node> openList;
     private List<Node> closeList;
     public Pathfinding(int width, int height)
     {
+        Instance = this;
         grid = new Grid<Node>(width, height, 1f, Vector3.zero, (Grid<Node> g, int x, int y) => new Node(g, x, y));
     }
 
-    private List<Vector3> FindPath(Vector3 startPos, Vector3 endPos)
+    public List<Vector3> FindPath(Vector3 startPos, Vector3 endPos)
     {
+        if(!grid.isOnGrid(startPos)|| !grid.isOnGrid(endPos))
+        {
+            return null;
+        }
         grid.GetXY(startPos, out int startX, out int startY);
         grid.GetXY(endPos, out int endX, out int endY);
 
@@ -33,7 +40,7 @@ public class Pathfinding
         }
     }
 
-    private List<Node> FindPath(int startX, int startY, int endX, int endY)
+    public List<Node> FindPath(int startX, int startY, int endX, int endY)
     {
         Node startNode = grid.GetGridObject(startX, startY);
         Node endNode = grid.GetGridObject(endX, endY);
@@ -135,20 +142,20 @@ public class Pathfinding
         if(node.x - 1 >= 0)
         {
             //left
-            node.neighbors.Add(grid.GetGridObject(node.x - 1, node.y));
+            neighborList.Add(grid.GetGridObject(node.x - 1, node.y));
         }
         if(node.x + 1 < grid.width)
         {
-            node.neighbors.Add(grid.GetGridObject(node.x + 1, node.y));
+            neighborList.Add(grid.GetGridObject(node.x + 1, node.y));
         }
         if (node.y - 1 >= 0)
         {
             //left
-            node.neighbors.Add(grid.GetGridObject(node.x, node.y - 1));
+            neighborList.Add(grid.GetGridObject(node.x, node.y - 1));
         }
         if (node.y + 1 < grid.height)
         {
-            node.neighbors.Add(grid.GetGridObject(node.x, node.y + 1));
+            neighborList.Add(grid.GetGridObject(node.x, node.y + 1));
         }
 
         return neighborList;
