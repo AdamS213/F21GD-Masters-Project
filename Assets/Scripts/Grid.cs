@@ -48,13 +48,4 @@ public class Grid<TGridObject>
     {
         return gridArray[x, y];
     }
-
-    public bool isOnGrid(Vector3 worldPos)
-    {
-        if(worldPos.x < 0 || worldPos.x > width || worldPos.y < 0 || worldPos.y > height)
-        {
-            return false;
-        }
-        return true;
-    }
 }
