@@ -14,7 +14,7 @@ public class CameraController : MonoBehaviour
     private PlayerControls playerControls;
     private InputAction moveCamera;
     private InputAction rotateCamera;
-    private InputAction returnToPlayer;
+    
     private Vector3 movement;
     private Vector3 newPostion;
     private Quaternion newRotation;
@@ -32,24 +32,13 @@ public class CameraController : MonoBehaviour
         moveCamera.Enable();
         rotateCamera = playerControls.Camera.rotate;
         rotateCamera.Enable();
-        returnToPlayer = playerControls.Camera.focusOnPlayer;
-        returnToPlayer.Enable();
+       
     }
     private void OnDisable()
     {
         moveCamera.Disable();
         rotateCamera.Disable();
-        returnToPlayer.Disable();
-    }
-
-
-
-    private void Update()
-    {
-        if (returnToPlayer.triggered)
-        {
-            focusCameraOnPoint(new Vector3(0, 0, 0));
-        }
+        
     }
 
     private void FixedUpdate()
