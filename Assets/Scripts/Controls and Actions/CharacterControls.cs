@@ -96,7 +96,12 @@ public class CharacterControls : MonoBehaviour
     {
         currentPathIndex = 0;
         isLerping = true;
-        currentPath = Pathfinding.Instance.FindPath(transform.position, targetPosition);
+        //avoids error caused by clicking the square the player occupies
+        if(targetPosition != transform.position)
+        {
+            currentPath = Pathfinding.Instance.FindPath(transform.position, targetPosition);
+        }
+        
         
     }
 }
