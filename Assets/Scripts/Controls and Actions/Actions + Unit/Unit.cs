@@ -14,6 +14,7 @@ public class Unit : MonoBehaviour
     [SerializeField] private int maxMoveDistance;
     private int actionPoints;
     private GridPosition gridPosition; 
+    [SerializeField] private bool isLootable;
 
     public static event EventHandler OnAnyActionPointsChanged;
     public static event EventHandler OnAnyUnitSpawned;
@@ -129,6 +130,11 @@ public class Unit : MonoBehaviour
     public bool IsEnemy()
     {
         return isEnemy;
+    }
+
+    public bool IsLootable()
+    {
+        return isLootable;
     }
 
     public void Damage(int damageAmount)

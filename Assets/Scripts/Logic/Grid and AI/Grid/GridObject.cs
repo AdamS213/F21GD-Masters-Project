@@ -7,14 +7,15 @@ public class GridObject
     private Grid<GridObject> parentGrid;
     private GridPosition gridPosition;
 
-    public Unit unit;
+    private Unit unit;
+    private bool isWalkable = true;
 
     public int gCost;
     public int hCost;
     public int fCost;
 
     public GridObject cameFromNode;
-    public List<GridObject> neighbors;
+    private List<GridObject> neighbors;
 
     public GridObject(Grid<GridObject> parentGrid, GridPosition gridPosition)
     {
@@ -27,16 +28,20 @@ public class GridObject
     {
         return gridPosition;
     }
-    public Unit GetUnit()
+    public bool GetUnit(out Unit outUnit)
     {
-        return unit;
+        outUnit = this.unit;
+        
+        return HasUnit();
     }
 
     public void SetUnit(Unit unit)
     {
-        if(!HasUnit())
+        
+        if(isWalkable)
         {
             this.unit = unit;
+            SetIsWalkable(false);
         }
             
     }
@@ -44,7 +49,7 @@ public class GridObject
     public void ClearUnit()
     {
         this.unit = null;
-        
+        SetIsWalkable(true);
     }
 
     public bool HasUnit()
@@ -57,8 +62,34 @@ public class GridObject
         fCost = gCost + hCost;
     }
 
-    public void setNeighbours(List<GridObject> neighbors)
+    public void SetNeighbours(List<GridObject> neighbors)
     {
         this.neighbors = neighbors;
+    }
+
+    public List<GridObject> GetNeighbours()
+    {
+        return neighbors;
+    }
+
+    public List<GridPosition> GetNeighbourPositions()
+    {
+        List<GridPosition> gridPositions = new List<GridPosition>();
+
+        foreach(GridObject neighbor in neighbors)
+        {
+            gridPositions.Add(neighbor.GetGridPosition());
+        }
+        return gridPositions;
+    }
+
+    public void SetIsWalkable(bool isWalkable)
+    {
+        this.isWalkable = isWalkable;
+    }
+
+    public bool IsWalkable()
+    {
+        return isWalkable;
     }
 }

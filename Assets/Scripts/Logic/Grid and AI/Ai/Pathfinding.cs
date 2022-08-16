@@ -5,14 +5,32 @@ using UnityEngine;
 public class Pathfinding 
 {
 
-    
     private Grid<GridObject> grid;
     private List<GridObject> openList;
     private List<GridObject> closeList;
     public Pathfinding(int width, int height, float scale, Vector3 originPosition,Grid<GridObject> grid)
     {
-        
        this.grid = grid; 
+       
+       //set all positions that are covered with obstacles as unwalkable
+       for(int x = 0; x < width; x++)
+       {
+            for (int y = 0; y < width; y++)
+            {
+                
+                GridPosition tempGridPosition = new GridPosition(x, y);
+                GridObject tempGridObject = grid.GetGridObject(tempGridPosition);
+                tempGridObject.SetNeighbours(GetNeighborList(tempGridObject));
+                Vector3 tempWorldPosition = grid.GetWorldPosition(tempGridPosition);
+                //avoid raycast spawning in obstacle and thus not triggering
+                float rayCastOffset = 5f;
+                //check if obstacle is present on grid position, if so set it to unwalkable
+                if(Physics.Raycast(tempWorldPosition + (Vector3.down * rayCastOffset), Vector3.up, rayCastOffset * 2,GameManager.Instance.obstaclesLayerMask))
+                {
+                    grid.GetGridObject(tempGridPosition).SetIsWalkable(false);
+                }
+            }
+       }
     }
 
     public List<Vector3> FindPath(Vector3 startWPos, Vector3 endWPos)
@@ -56,7 +74,6 @@ public class Pathfinding
                 node.gCost = int.MaxValue;
                 node.CalculateFCost();
                 node.cameFromNode = null;
-                node.setNeighbours(GetNeighborList(node));
             }
         }
 
@@ -75,14 +92,14 @@ public class Pathfinding
             openList.Remove(currentNode);
             closeList.Add(currentNode);
 
-            foreach (GridObject n in currentNode.neighbors)
+            foreach (GridObject n in currentNode.GetNeighbours())
             {
                 if(closeList.Contains(n))
                 {
                     continue; 
                 }
 
-                if(n.HasUnit())
+                if(!n.IsWalkable())
                 {
                     continue;
                 }

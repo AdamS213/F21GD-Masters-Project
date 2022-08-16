@@ -444,10 +444,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   unitAnimator: {fileID: 95206231959375140}
-  actionPointsMax: 4
+  actionPointsMax: 3
   isEnemy: 1
   moveSpeed: 2
   maxMoveDistance: 4
+  isLootable: 0
 --- !u!114 &6934958259979955117
 MonoBehaviour:
   m_ObjectHideFlags: 0

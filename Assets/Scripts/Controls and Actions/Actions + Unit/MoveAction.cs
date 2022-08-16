@@ -83,7 +83,13 @@ public class MoveAction : BaseAction
         Vector3 targetWorldPosition = GameManager.Instance.levelGrid.GetWorldPosition(targetPosition);
             
         List<Vector3> tempPath = GameManager.Instance.pathfinding.FindPath(transform.position, targetWorldPosition);
-        if(tempPath.Count <= 1)
+        if(tempPath == null)
+        {
+            ActionComplete();
+            return;
+        }
+        
+        if (tempPath.Count <= 1 )
         {
             ActionComplete();
             return;
@@ -98,7 +104,13 @@ public class MoveAction : BaseAction
 
     public override List<GridPosition> GetValidActionGridPositions()
     {
+        
+
         List<GridPosition> validPositions = new List<GridPosition>();
+
+        List <GridPosition> neighborPositions = GameManager.Instance.levelGrid.GetGridObject(unit.GetGridPosition()).GetNeighbourPositions();
+
+
 
         for (int x = -maxMoveDistance; x <= maxMoveDistance; x++)
         {
@@ -106,6 +118,7 @@ public class MoveAction : BaseAction
             {
                 GridPosition offsetGridPosition = new GridPosition(x, z);
                 GridPosition positionToCheck = offsetGridPosition + unit.GetGridPosition();
+                //don't want to try and move to the position we already occupy
                 if (positionToCheck == unit.GetGridPosition())
                 {
                     continue;
@@ -120,12 +133,24 @@ public class MoveAction : BaseAction
                 {
                     continue;
                 }
+                //checks that the path to reach the position would not be larger than our movement range
+                List<GridObject> tempPath = GameManager.Instance.pathfinding.FindPath(unit.GetGridPosition(),positionToCheck);
+                if (tempPath == null)
+                {
+                    continue;
+                }
+                //plus two because the path includes our destination and our position
+                if (tempPath.Count >= maxMoveDistance+2)
+                {
+                    continue;
+                }
                 validPositions.Add(positionToCheck);
             }
         }
         return validPositions;
     }
 
+    
 
     public override string GetActionName()
     {
@@ -137,7 +162,7 @@ public class MoveAction : BaseAction
         int targetCountAtGridPosition = unit.GetAction<AttackAction>().GetTargetCountAtPosition(gridPosition);
 
         //check if our current position is a firing position, if so we don't want to move
-        if(unit.GetAction<AttackAction>().GetValidActionGridPositions(unit.GetGridPosition()).Count > 0)
+        if(unit.GetAction<AttackAction>().GetTargetCountAtPosition(unit.GetGridPosition()) > 0)
         {
             return new EnemyAiAction
             {
@@ -152,7 +177,7 @@ public class MoveAction : BaseAction
             return new EnemyAiAction
             {
                 gridPosition = gridPosition,
-                actionValue = targetCountAtGridPosition * 10
+                actionValue = (targetCountAtGridPosition * 10)+1
 
             };
         }

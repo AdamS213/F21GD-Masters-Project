@@ -71,9 +71,9 @@ public class GridVisual : MonoBehaviour
     public void ShowGridPositionRange(GridPosition gridPosition, int range, GridVisualType gridVisualType)
     {
         List<GridPosition> gridPositions = new List<GridPosition>();
-        for (int x = 0; x <= range; x++)
+        for (int x = -range; x <= range; x++)
         {
-            for (int z = 0; z <= range; z++)
+            for (int z = -range; z <= range; z++)
             {
                 GridPosition offsetGridPosition = new GridPosition(x, z);
                 GridPosition positionToCheck = offsetGridPosition + gridPosition;
@@ -121,6 +121,9 @@ public class GridVisual : MonoBehaviour
                 ShowGridPositionRange(player.GetGridPosition(), attackAction.GetAttackRange(),GridVisualType.RedSoft);
                 break;
             case SpinAction spinAction:
+                gridVisualType = GridVisualType.Blue;
+                break;
+            case StealAction stealAction:
                 gridVisualType = GridVisualType.Blue;
                 break;
         }

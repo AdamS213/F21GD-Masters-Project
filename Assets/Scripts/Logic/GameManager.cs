@@ -3,15 +3,20 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
+using TMPro;
 
 public class GameManager : MonoBehaviour
 {
 
-    [SerializeField] public GameObject testCube;
     [SerializeField] private int WIDTH;
     [SerializeField] private int HEIGHT;
     [SerializeField] private int SCALE;
     [SerializeField] public Vector3 levelOffset;
+    [SerializeField] private Button button;
+    [SerializeField] private TextMeshProUGUI StartEndText;
+    [SerializeField] private GameObject StartEndScreen;
+    public LayerMask obstaclesLayerMask;
     
     public static GameManager Instance { get; private set; }
 
@@ -46,8 +51,7 @@ public class GameManager : MonoBehaviour
         Instance = this;
         playerControls = new PlayerControls();
         
-        //creates 30 by 30 sized grid that contains GameObjects, we also pass in a function to Instantiate the GameObjects at the Correct postions
-        //preFabGrid = new Grid<GameObject>(HEIGHT, HEIGHT, SCALE, Vector3.zero, (Grid<GameObject> g, int x, int z) => createObjectsInWorld(g, x, z));
+        
         levelGrid = new Grid<GridObject>(WIDTH, HEIGHT, SCALE, Vector3.zero, (Grid<GridObject> g, int x, int z) => new GridObject(g, new GridPosition(x, z)));
         pathfinding = new Pathfinding(WIDTH, HEIGHT, SCALE, Vector3.zero,levelGrid);
         SetSelectedAction(player.GetAction<MoveAction>());
@@ -56,10 +60,15 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         camCont.SetPlayerControls(playerControls);
-
+        button.onClick.AddListener(() =>
+        {
+            StartEndScreen.SetActive(false);
+        });
         playerControls.Mouse.LeftMouseClick.performed += _ => LeftMouseClick();
         playerControls.Mouse.RightMouseClick.performed += _ => RightMouseClick();
-        
+        StealAction.onSteal += StealAction_OnSteal;
+
+
 
     }
 
@@ -81,11 +90,7 @@ public class GameManager : MonoBehaviour
     #endregion
 
     #region Utility Functions
-    // function that we pass into the Grid Constructor
-    GameObject createObjectsInWorld(Grid<GameObject> g, int x, int z)
-    {
-        return GameObject.Instantiate(testCube, g.GetWorldPosition(x, z), Quaternion.identity);
-    }
+    
 
     //Converts mouse position to world position, returns true if we clicked on something, false if not
     public bool MouseToWorld(Vector2 mousePos, out Vector3Int WorldPos)
@@ -184,7 +189,12 @@ public class GameManager : MonoBehaviour
         return selectedAction;
     }
     #endregion
-
+    private void StealAction_OnSteal(object sender, EventArgs e)
+    {
+        StartEndScreen.SetActive(true);
+        button.gameObject.SetActive(false);
+        StartEndText.text = "You stole the Liches treasure right out from under them! Well done!";
+    }
 
 
 }

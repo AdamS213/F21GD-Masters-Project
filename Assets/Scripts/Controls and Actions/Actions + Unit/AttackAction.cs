@@ -54,7 +54,7 @@ public class AttackAction : BaseAction
     }
     public override string GetActionName()
     {
-        return "shoot";
+        return "Attack";
     }
 
     public override List<GridPosition> GetValidActionGridPositions()
@@ -88,7 +88,7 @@ public class AttackAction : BaseAction
                 {
                     continue;
                 }
-                target = GameManager.Instance.levelGrid.GetGridObject(positionToCheck).GetUnit();
+                GameManager.Instance.levelGrid.GetGridObject(positionToCheck).GetUnit(out target);
                 //dont want to be able to attack friendly units
                 if (target.IsEnemy() == unit.IsEnemy())
                 {
@@ -105,7 +105,7 @@ public class AttackAction : BaseAction
         ActionStart(onActionComplete);
         isLerping = true;
         attacking = true;
-        target = GameManager.Instance.levelGrid.GetGridObject(gridPosition).GetUnit();
+        GameManager.Instance.levelGrid.GetGridObject(gridPosition).GetUnit(out target);
         
 
     }
