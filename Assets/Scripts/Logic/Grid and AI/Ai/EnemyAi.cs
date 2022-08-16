@@ -5,7 +5,7 @@ using System;
 
 public class EnemyAi : MonoBehaviour
 {
-
+    public static EnemyAi Instance { get; private set; }
     private enum State
     {
         WaitingForEnemyTurn,
@@ -16,8 +16,20 @@ public class EnemyAi : MonoBehaviour
     private State state;
     private float timer = 1f;
 
+    [SerializeField] List<Transform> patrolPoints;
+    private List<GridPosition> patrolGridPositions;
+    private GridPosition currentPatrolRoute;
+    private bool reachedCurrentRoute = false;
+
     private void Awake()
     {
+        if (Instance != null)
+        {
+            // prevents duplicates
+            Destroy(gameObject);
+            return;
+        }
+        Instance = this;
         state = State.WaitingForEnemyTurn;
     }
 
@@ -38,17 +50,15 @@ public class EnemyAi : MonoBehaviour
             case State.WaitingForEnemyTurn:
                 break;
             case State.TakingTurn:
-                timer -= Time.deltaTime;
-                if (timer <= 0f)
+
+                if(TryTakeEnemyAiAction(SetStateTakingTurn))
                 {
-                    if(TryTakeEnemyAiAction(SetStateTakingTurn))
-                    {
-                        state = State.Busy;
-                    }else
-                    {
-                        //no more enemies that can take actions
-                        TurnSystem.Instance.NextTurn();
-                    }
+                    state = State.Busy;
+                }else
+                {
+                    //no more enemies that can take actions
+                    state = State.WaitingForEnemyTurn;
+                    TurnSystem.Instance.NextTurn();
                 }
                 break;
             case State.Busy:
@@ -57,10 +67,18 @@ public class EnemyAi : MonoBehaviour
 
         
     }
-
+    private void getPatrolGridPositions()
+    {
+        patrolGridPositions = new List<GridPosition>();
+        foreach (Transform patrolPoint in patrolPoints)
+        {
+            GridPosition temp = GameManager.Instance.levelGrid.GetGridPosition(patrolPoint.position);
+            patrolGridPositions.Add(temp);
+        }
+    }
     private void SetStateTakingTurn()
     {
-        timer = 0.5f;
+        Debug.Log("Enemy Completed Action");
         state = State.TakingTurn;
     }
 
@@ -80,6 +98,13 @@ public class EnemyAi : MonoBehaviour
         
         foreach (Unit enemyUnit in enemies)
         {
+            if (!enemyUnit.checkIfOpposedUnitInSight(GameManager.Instance.GetPlayer()))
+            {
+                if(Patrol(enemyUnit, onEnemyAiActionComplete))
+                {
+                    return true;
+                }
+            }
             if (TryTakeEnemyAiAction(enemyUnit, onEnemyAiActionComplete))
             {
                 return true;
@@ -135,4 +160,64 @@ public class EnemyAi : MonoBehaviour
             return false;
         }
     }
+
+    private bool Patrol(Unit enemyUnit, Action onEnemyAiActionComplete)
+    {
+       
+        getPatrolGridPositions();
+        shufflePatrolGridPositions();
+        GridPosition closestPatrolPoint = patrolGridPositions[0];
+        GridPosition enemyPosition = enemyUnit.GetGridPosition();
+        if (reachedCurrentRoute)
+        {
+            for (int x = 1; x < patrolGridPositions.Count; x++)
+            {
+                GridPosition tempGridPosition = patrolGridPositions[x];
+                if (enemyPosition == tempGridPosition)
+                {
+                    reachedCurrentRoute = true;
+                    continue;
+                }
+                if (GridPosition.Distance(enemyPosition, tempGridPosition) < GridPosition.Distance(enemyPosition, closestPatrolPoint))
+                {
+                    closestPatrolPoint = tempGridPosition;
+                }
+            }
+            currentPatrolRoute = closestPatrolPoint;
+            reachedCurrentRoute = false;
+        }
+        
+
+        List<GridObject> pathToPatrolPoint = GameManager.Instance.pathfinding.FindPath(enemyPosition, closestPatrolPoint);
+        if (pathToPatrolPoint.Count - 2 > enemyUnit.GetMaxMoveDistance())
+        {
+            for (int x = pathToPatrolPoint.Count; x > enemyUnit.GetMaxMoveDistance(); x--)
+                {
+                    pathToPatrolPoint.RemoveAt(enemyUnit.GetMaxMoveDistance());
+                }
+        }
+        if(enemyUnit.TrySpendPointsToTakeAction(enemyUnit.GetAction<MoveAction>()))
+        {
+            enemyUnit.GetAction<MoveAction>().TakeAction(pathToPatrolPoint[pathToPatrolPoint.Count - 1].GetGridPosition(), onEnemyAiActionComplete);
+            if (enemyPosition == currentPatrolRoute)
+            {
+                reachedCurrentRoute = true;
+            }
+            return true;
+        }
+        return false;
+    }
+
+    private void shufflePatrolGridPositions()
+    {
+        for (int i = 0; i < patrolGridPositions.Count; i++)
+        {
+            GridPosition temp = patrolGridPositions[i];
+            int randomIndex = UnityEngine.Random.Range(i, patrolGridPositions.Count);
+            patrolGridPositions[i] = patrolGridPositions[randomIndex];
+            patrolGridPositions[randomIndex] = temp;
+        }
+    }
+
+    
 }

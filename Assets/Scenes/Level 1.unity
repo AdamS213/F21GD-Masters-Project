@@ -2585,11 +2585,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3508768680391071026, guid: c11d3215ffd965a4dac09481dfb9c085, type: 3}
       propertyPath: health
-      value: 10000
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 3821908100410089568, guid: c11d3215ffd965a4dac09481dfb9c085, type: 3}
       propertyPath: actionPointsMax
-      value: 50
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 3821908100410089568, guid: c11d3215ffd965a4dac09481dfb9c085, type: 3}
       propertyPath: maxMoveDistance

@@ -1,5 +1,7 @@
 
 using System;
+using System.Collections;
+using UnityEngine;
 public struct GridPosition : IEquatable<GridPosition>
 {
     public int x;
@@ -54,6 +56,15 @@ public struct GridPosition : IEquatable<GridPosition>
     public static GridPosition operator -(GridPosition a, GridPosition b)
     {
         return new GridPosition(a.x - b.x, a.y - b.y);
+    }
+
+    public static float Distance(GridPosition a, GridPosition b)
+    {
+        float distance;
+        float xdistance = (b.x - a.x)^2;
+        float ydistance = (b.y - a.y)^2;
+        distance = Mathf.Sqrt(xdistance + ydistance);
+        return Mathf.Abs( distance);
     }
 
 }

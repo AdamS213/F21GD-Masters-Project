@@ -14,16 +14,6 @@ public class StealAction : BaseAction
         return "Steal";
     }
 
-    public override EnemyAiAction GetEnemyAiAction(GridPosition gridPosition)
-    {
-        //Ai should not be using Steal Action
-        return new EnemyAiAction
-        {
-            gridPosition = gridPosition,
-            actionValue = 0,
-        };
-    }
-
     public override List<GridPosition> GetValidActionGridPositions()
     {
         List<GridPosition> validPositions = new List<GridPosition>();

@@ -71,5 +71,12 @@ public abstract class BaseAction : MonoBehaviour
         
     }
 
-    public abstract EnemyAiAction GetEnemyAiAction(GridPosition gridPosition);
+    public virtual EnemyAiAction GetEnemyAiAction(GridPosition gridPosition)
+    {
+        return new EnemyAiAction
+        {
+            gridPosition = gridPosition,
+            actionValue = 0,
+        };
+    }
 }

@@ -41,18 +41,4 @@ public class SpinAction : BaseAction
         return new List<GridPosition> { unitGridPosition };
 
     }
-
-    public override int GetActionPointsCost()
-    {
-        return 1;
-    }
-
-    public override EnemyAiAction GetEnemyAiAction(GridPosition gridPosition)
-    {
-        return new EnemyAiAction
-        {
-            gridPosition = gridPosition,
-            actionValue = 0,
-        };
-    }
 }

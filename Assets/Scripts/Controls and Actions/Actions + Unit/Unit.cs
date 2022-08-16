@@ -142,4 +142,58 @@ public class Unit : MonoBehaviour
         healthSystem.Damage(damageAmount);
        
     }
+
+    public bool checkIfOpposedUnitInSight()
+    {
+        if(isEnemy)
+        {
+            foreach (Unit unit in UnitManager.Instance.GetFriendlyUnitList())
+            {
+                if (unit.IsLootable())
+                {
+                    continue;
+                }
+                else
+                {
+                    return checkIfOpposedUnitInSight(unit);
+                }
+            }
+        }
+        //code may be relevant in future work but isn't in current build
+        else
+        {
+            foreach (Unit unit in UnitManager.Instance.GetEnemyUnitList())
+            {
+                //may want to change if idea for stealing from enemies for points is implemented
+                if (unit.IsLootable())
+                {
+                    continue;
+                }
+                else
+                {
+                    return checkIfOpposedUnitInSight(unit);
+                }
+            }
+        }
+        return false;
+
+    }
+
+    public bool checkIfOpposedUnitInSight(Unit targetUnit)
+    {
+        RaycastHit hit;
+        LayerMask mask = LayerMask.GetMask("Obstacle");
+        Vector3 direction = targetUnit.GetWorldPosition() - transform.position;
+        float distanceToNode = Vector3.Distance(transform.position, targetUnit.GetWorldPosition());
+        if (Physics.Raycast(transform.position, direction, out hit, distanceToNode, mask))
+        {
+            float distanceToHit = Vector3.Distance(transform.position, hit.point);
+
+            if ((distanceToNode - distanceToHit) < 1.0f)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
 }
