@@ -58,6 +58,10 @@ public class Grid<TGridObject>
     // returns object residing in given grid position
     public TGridObject GetGridObject(GridPosition gridPos)
     {
+        if(gridArray[gridPos.x, gridPos.y] == null)
+        {
+            Debug.Log(gridPos);
+        }
         return gridArray[gridPos.x, gridPos.y];
     }
 
@@ -70,7 +74,7 @@ public class Grid<TGridObject>
     //checks if the given worldPos is on our grid returns true if it is, false if not
     public bool isOnGrid(Vector3 worldPos)
     {
-        if(worldPos.x < 0 || worldPos.x > width*cellSize || worldPos.z < 0 || worldPos.z > height*cellSize)
+        if(worldPos.x < 0 || worldPos.x >= width*cellSize || worldPos.z < 0 || worldPos.z >= height*cellSize)
         {
             return false;
         }
@@ -79,7 +83,7 @@ public class Grid<TGridObject>
 
     public bool isOnGrid(GridPosition gridPos)
     {
-        if (gridPos.x < 0 || gridPos.x > width * cellSize || gridPos.y < 0 || gridPos.y > height * cellSize)
+        if (gridPos.x < 0 || gridPos.x >= width|| gridPos.y < 0 || gridPos.y >= height)
         {
             return false;
         }

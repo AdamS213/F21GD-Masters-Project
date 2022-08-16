@@ -26,6 +26,7 @@ public class CameraController : MonoBehaviour
     private void Start()
     {
         playerControls.Camera.focusOnPlayer.performed += _ => FocusCameraOnPoint(GameManager.Instance.GetPlayer().transform.position + Vector3.down);
+        FocusCameraOnPoint(GameManager.Instance.GetPlayer().GetWorldPosition());
     }
     private void OnEnable()
     {

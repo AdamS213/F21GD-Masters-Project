@@ -14,7 +14,7 @@ public class EnemyAi : MonoBehaviour
     }
 
     private State state;
-    private float timer = 2f;
+    private float timer = 1f;
 
     private void Awake()
     {
@@ -69,7 +69,7 @@ public class EnemyAi : MonoBehaviour
         if(!TurnSystem.Instance.IsPlayerTurn())
         {
             state = State.TakingTurn;
-            timer = 2f;
+            timer = 1f;
         }
         
     }
