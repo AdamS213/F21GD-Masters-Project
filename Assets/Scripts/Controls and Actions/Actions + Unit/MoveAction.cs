@@ -64,7 +64,7 @@ public class MoveAction : BaseAction
                 //makes movement from point a to b smooth
                 transform.position = Vector3.Lerp(currentPath[currentPathIndex], currentPath[currentPathIndex + 1], timer);
                 // should make camera follow player during movement
-                GameManager.Instance.camCont.FocusCameraOnPoint(transform.position + Vector3.down);
+                GameManager.Instance.camCont.FocusCameraOnPoint(transform.position);
                 if (timer >= 1.0f)
                 {
                     isLerping = false;
@@ -177,7 +177,7 @@ public class MoveAction : BaseAction
             return new EnemyAiAction
             {
                 gridPosition = gridPosition,
-                actionValue = (targetCountAtGridPosition * 10)+1
+                actionValue = (targetCountAtGridPosition * 10)
 
             };
         }
