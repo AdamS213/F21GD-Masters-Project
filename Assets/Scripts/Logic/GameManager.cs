@@ -94,7 +94,6 @@ public class GameManager : MonoBehaviour
         if (Physics.Raycast(ray, out RaycastHit raycastHit))
         {
             WorldPos = Vector3Int.RoundToInt(raycastHit.point);
-            Debug.Log("Yay");
             return true;
         }
         WorldPos = Vector3Int.zero;

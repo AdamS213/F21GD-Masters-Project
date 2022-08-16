@@ -94,7 +94,18 @@ public class EnemyAi : MonoBehaviour
         BaseAction bestBaseAction = null;
         foreach(BaseAction baseAction in enemyUnit.GetActions())
         {
+            //if we don't have enough action points to perform this action check the next
             if(!enemyUnit.CanSpendPointsToTakeAction(baseAction))
+            {
+                continue;
+            }
+            //if the action has no viable AiActions for us we check the next
+            if(baseAction.GetBestEnemyAiAction() == null)
+            {
+                continue;
+            }
+            //if the actions best AiAction has a value of 0 we check the next action
+            if(baseAction.GetBestEnemyAiAction().actionValue == 0)
             {
                 continue;
             }
@@ -113,11 +124,12 @@ public class EnemyAi : MonoBehaviour
             }
          
         }
-
+        //if we have a viable Ai action and we can spend the action points to perform it, we do
         if(bestEnemyAiAction != null && enemyUnit.TrySpendPointsToTakeAction(bestBaseAction))
         {
             bestBaseAction.TakeAction(bestEnemyAiAction.gridPosition, onEnemyAiActionComplete);
             return true;
+        /// otherwise we tell the system that this unit has no more viable actions to take
         }else
         {
             return false;

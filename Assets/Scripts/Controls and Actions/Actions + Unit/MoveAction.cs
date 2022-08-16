@@ -136,11 +136,26 @@ public class MoveAction : BaseAction
     {
         int targetCountAtGridPosition = unit.GetAction<AttackAction>().GetTargetCountAtPosition(gridPosition);
 
-        return new EnemyAiAction
+        //check if our current position is a firing position, if so we don't want to move
+        if(unit.GetAction<AttackAction>().GetValidActionGridPositions(unit.GetGridPosition()).Count > 0)
         {
-            gridPosition = gridPosition,
-            actionValue = targetCountAtGridPosition * 10,
-        };
+            return new EnemyAiAction
+            {
+                gridPosition = gridPosition,
+                actionValue = 0
+
+            };
+        } 
+        // if we aren't in a spot where we can hit something we want to move somewhere we can
+        else
+        {
+            return new EnemyAiAction
+            {
+                gridPosition = gridPosition,
+                actionValue = targetCountAtGridPosition * 10
+
+            };
+        }
     }
 
     
