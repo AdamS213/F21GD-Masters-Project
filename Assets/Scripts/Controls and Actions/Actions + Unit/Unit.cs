@@ -5,9 +5,6 @@ using System;
 
 public class Unit : MonoBehaviour
 {
-    private MoveAction moveAction;
-    private SpinAction spinAction;
-    private AttackAction attackAction;
     private BaseAction[] actions;
     private HealthSystem healthSystem;
     public Animator unitAnimator;
@@ -16,7 +13,7 @@ public class Unit : MonoBehaviour
     [SerializeField] private float moveSpeed;
     [SerializeField] private int maxMoveDistance;
     private int actionPoints;
-    public GridPosition gridPosition { private set; get; }
+    private GridPosition gridPosition; 
 
     public static event EventHandler OnAnyActionPointsChanged;
     public static event EventHandler OnAnyUnitSpawned;
@@ -24,9 +21,6 @@ public class Unit : MonoBehaviour
 
     private void Awake()
     {
-        moveAction = GetComponent<MoveAction>();
-        spinAction = GetComponent<SpinAction>();
-        attackAction = GetComponent<AttackAction>();
         healthSystem = GetComponent<HealthSystem>();
         actions = GetComponents<BaseAction>();
     }
@@ -34,7 +28,7 @@ public class Unit : MonoBehaviour
     private void Start()
     {
         gridPosition = GameManager.Instance.levelGrid.GetGridPosition(transform.position);
-        GameManager.Instance.levelGrid.GetGridObject(gridPosition).unit = this;
+        GameManager.Instance.levelGrid.GetGridObject(gridPosition).SetUnit(this);
 
         TurnSystem.Instance.OnTurnChanged += TurnSystem_OnTurnChanged;
         healthSystem.OnDead += HealthSystem_OnDead;
@@ -71,21 +65,18 @@ public class Unit : MonoBehaviour
         OnAnyUnitDead?.Invoke(this, EventArgs.Empty);
     }
 
-    public MoveAction GetMoveAction()
+    public T GetAction<T>() where T: BaseAction
     {
-        return moveAction;
+        foreach (BaseAction baseAction in actions)
+        {
+            if(baseAction is T)
+            {
+                return (T)baseAction;
+            }
+        }
+        return null;
     }
-
-    public SpinAction GetSpinAction()
-    {
-        return spinAction;
-    }
-
-    public AttackAction GetAttackAction()
-    {
-        return attackAction;
-    }
-
+    
     public BaseAction[] GetActions()
     {
         return actions;
@@ -101,25 +92,30 @@ public class Unit : MonoBehaviour
         return moveSpeed;
     }
 
-    public int getMaxMoveDistance()
+    public int GetMaxMoveDistance()
     {
         return maxMoveDistance;
     }
+
+    public GridPosition GetGridPosition()
+    {
+        return gridPosition;
+    }
     public bool TrySpendPointsToTakeAction(BaseAction baseAction)
     {
-        if(canSpendPointsToTakeAction(baseAction))
+        if(CanSpendPointsToTakeAction(baseAction))
         {
-            spendActionPoints(baseAction.GetActionPointsCost());
+            SpendActionPoints(baseAction.GetActionPointsCost());
             return true;
         }
         return false;
     }
-    public bool canSpendPointsToTakeAction(BaseAction baseAction)
+    public bool CanSpendPointsToTakeAction(BaseAction baseAction)
     {
         return actionPoints >= baseAction.GetActionPointsCost();
     }
 
-    private void spendActionPoints(int amount)
+    private void SpendActionPoints(int amount)
     {
         actionPoints -= amount;
 

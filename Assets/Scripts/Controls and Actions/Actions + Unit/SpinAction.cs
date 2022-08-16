@@ -36,7 +36,7 @@ public class SpinAction : BaseAction
 
     public override List<GridPosition> GetValidActionGridPositions()
     {
-        GridPosition unitGridPosition = unit.gridPosition;
+        GridPosition unitGridPosition = unit.GetGridPosition();
 
         return new List<GridPosition> { unitGridPosition };
 
@@ -52,7 +52,7 @@ public class SpinAction : BaseAction
         return new EnemyAiAction
         {
             gridPosition = gridPosition,
-            ActionValue = 0,
+            actionValue = 0,
         };
     }
 }

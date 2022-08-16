@@ -20,7 +20,7 @@ public class MoveAction : BaseAction
     {
         base.Awake();
         moveSpeed = unit.GetMoveSpeed();
-        maxMoveDistance = unit.getMaxMoveDistance();
+        maxMoveDistance = unit.GetMaxMoveDistance();
     }
     private void Update()
     {
@@ -105,8 +105,8 @@ public class MoveAction : BaseAction
             for (int z = -maxMoveDistance; z <= maxMoveDistance; z++)
             {
                 GridPosition offsetGridPosition = new GridPosition(x, z);
-                GridPosition positionToCheck = offsetGridPosition + unit.gridPosition;
-                if (positionToCheck == unit.gridPosition)
+                GridPosition positionToCheck = offsetGridPosition + unit.GetGridPosition();
+                if (positionToCheck == unit.GetGridPosition())
                 {
                     continue;
                 }
@@ -134,12 +134,12 @@ public class MoveAction : BaseAction
 
     public override EnemyAiAction GetEnemyAiAction(GridPosition gridPosition)
     {
-        int targetCountAtGridPosition = unit.GetAttackAction().GetTargetCountAtPosition(gridPosition);
+        int targetCountAtGridPosition = unit.GetAction<AttackAction>().GetTargetCountAtPosition(gridPosition);
 
         return new EnemyAiAction
         {
             gridPosition = gridPosition,
-            ActionValue = targetCountAtGridPosition * 10,
+            actionValue = targetCountAtGridPosition * 10,
         };
     }
 

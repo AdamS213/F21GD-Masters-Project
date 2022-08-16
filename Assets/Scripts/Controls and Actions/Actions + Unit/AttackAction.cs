@@ -59,7 +59,7 @@ public class AttackAction : BaseAction
 
     public override List<GridPosition> GetValidActionGridPositions()
     {
-        GridPosition unitGridPosition = unit.gridPosition;
+        GridPosition unitGridPosition = unit.GetGridPosition();
         return GetValidActionGridPositions(unitGridPosition);
     }
 
@@ -125,7 +125,7 @@ public class AttackAction : BaseAction
         return new EnemyAiAction
         {
             gridPosition = gridPosition,
-            ActionValue = 100,
+            actionValue = 100,
         };
     }
 

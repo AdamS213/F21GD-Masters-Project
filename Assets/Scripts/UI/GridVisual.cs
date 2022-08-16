@@ -118,7 +118,7 @@ public class GridVisual : MonoBehaviour
             case AttackAction attackAction:
                 gridVisualType = GridVisualType.Red;
 
-                ShowGridPositionRange(player.gridPosition, attackAction.GetAttackRange(),GridVisualType.RedSoft);
+                ShowGridPositionRange(player.GetGridPosition(), attackAction.GetAttackRange(),GridVisualType.RedSoft);
                 break;
             case SpinAction spinAction:
                 gridVisualType = GridVisualType.Blue;

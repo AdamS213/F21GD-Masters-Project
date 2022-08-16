@@ -7,7 +7,7 @@ using UnityEngine.EventSystems;
 public class GameManager : MonoBehaviour
 {
 
-    [SerializeField] private GameObject testCube;
+    [SerializeField] public GameObject testCube;
     [SerializeField] private int WIDTH;
     [SerializeField] private int HEIGHT;
     [SerializeField] private int SCALE;
@@ -45,11 +45,12 @@ public class GameManager : MonoBehaviour
         }
         Instance = this;
         playerControls = new PlayerControls();
-        pathfinding = new Pathfinding(WIDTH, HEIGHT, SCALE, Vector3.zero);
+        
         //creates 30 by 30 sized grid that contains GameObjects, we also pass in a function to Instantiate the GameObjects at the Correct postions
-        preFabGrid = new Grid<GameObject>(30, 30, testCube.transform.localScale.x, Vector3.zero, (Grid<GameObject> g, int x, int z) => createObjectsInWorld(g, x, z));
+        //preFabGrid = new Grid<GameObject>(HEIGHT, HEIGHT, SCALE, Vector3.zero, (Grid<GameObject> g, int x, int z) => createObjectsInWorld(g, x, z));
         levelGrid = new Grid<GridObject>(WIDTH, HEIGHT, SCALE, Vector3.zero, (Grid<GridObject> g, int x, int z) => new GridObject(g, new GridPosition(x, z)));
-        SetSelectedAction(player.GetMoveAction());
+        pathfinding = new Pathfinding(WIDTH, HEIGHT, SCALE, Vector3.zero,levelGrid);
+        SetSelectedAction(player.GetAction<MoveAction>());
 
     }
     void Start()
@@ -93,6 +94,7 @@ public class GameManager : MonoBehaviour
         if (Physics.Raycast(ray, out RaycastHit raycastHit))
         {
             WorldPos = Vector3Int.RoundToInt(raycastHit.point);
+            Debug.Log("Yay");
             return true;
         }
         WorldPos = Vector3Int.zero;

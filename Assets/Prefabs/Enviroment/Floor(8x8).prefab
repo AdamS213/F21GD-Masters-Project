@@ -11,8 +11,9 @@ GameObject:
   - component: {fileID: 476448}
   - component: {fileID: 3397702}
   - component: {fileID: 2390402}
+  - component: {fileID: -2562505728389322706}
   m_Layer: 0
-  m_Name: floor2 1
+  m_Name: Floor(8x8)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -27,7 +28,7 @@ Transform:
   m_GameObject: {fileID: 172818}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.33, y: 0.33, z: 0.33}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -81,3 +82,16 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!65 &-2562505728389322706
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 172818}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 8, y: 1.9999999, z: 8}
+  m_Center: {x: 0.00000023841858, y: 1.0000001, z: -0.00000059604645}

@@ -94,9 +94,8 @@ public class EnemyAi : MonoBehaviour
         BaseAction bestBaseAction = null;
         foreach(BaseAction baseAction in enemyUnit.GetActions())
         {
-            if(!enemyUnit.canSpendPointsToTakeAction(baseAction))
+            if(!enemyUnit.CanSpendPointsToTakeAction(baseAction))
             {
-                //cant afford this action
                 continue;
             }
             if(bestEnemyAiAction == null)
@@ -105,10 +104,10 @@ public class EnemyAi : MonoBehaviour
                 bestBaseAction = baseAction;
             }else
             {
-                EnemyAiAction tempEnemyAiAction = baseAction.GetBestEnemyAiAction();
-                if(tempEnemyAiAction != null && tempEnemyAiAction.ActionValue > bestEnemyAiAction.ActionValue)
+                EnemyAiAction testEnemyAiAction = baseAction.GetBestEnemyAiAction();
+                if(testEnemyAiAction != null && testEnemyAiAction.actionValue > bestEnemyAiAction.actionValue)
                 {
-                    bestEnemyAiAction = tempEnemyAiAction;
+                    bestEnemyAiAction = testEnemyAiAction;
                     bestBaseAction = baseAction;
                 }
             }

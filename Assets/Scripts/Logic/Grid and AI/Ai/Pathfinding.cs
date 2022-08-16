@@ -6,13 +6,13 @@ public class Pathfinding
 {
 
     
-    private Grid<Node> grid;
-    private List<Node> openList;
-    private List<Node> closeList;
-    public Pathfinding(int width, int height, float scale, Vector3 originPosition)
+    private Grid<GridObject> grid;
+    private List<GridObject> openList;
+    private List<GridObject> closeList;
+    public Pathfinding(int width, int height, float scale, Vector3 originPosition,Grid<GridObject> grid)
     {
         
-        grid = new Grid<Node>(width, height, scale, originPosition, (Grid<Node> g, int x, int y) => new Node(g, x, y));
+       this.grid = grid; 
     }
 
     public List<Vector3> FindPath(Vector3 startWPos, Vector3 endWPos)
@@ -24,7 +24,7 @@ public class Pathfinding
         GridPosition startGPos = grid.GetGridPosition(startWPos);
         GridPosition endGPos = grid.GetGridPosition(endWPos);
 
-        List <Node> path = FindPath(startGPos, endGPos);
+        List <GridObject> path = FindPath(startGPos, endGPos);
         if(path == null)
         {
             return null;
@@ -32,27 +32,27 @@ public class Pathfinding
         else
         {
             List<Vector3> vectorPath = new List<Vector3>();
-            foreach(Node node in path)
+            foreach(GridObject node in path)
             {
-                vectorPath.Add(grid.GetWorldPosition(node.pos) + GameManager.Instance.levelOffset);
+                vectorPath.Add(grid.GetWorldPosition(node.GetGridPosition()) + GameManager.Instance.levelOffset);
             }
             return vectorPath;
         }
     }
 
-    public List<Node> FindPath(GridPosition startPos, GridPosition endPos)
+    public List<GridObject> FindPath(GridPosition startPos, GridPosition endPos)
     {
-        Node startNode = grid.GetGridObject(startPos);
-        Node endNode = grid.GetGridObject(endPos);
+        GridObject startNode = grid.GetGridObject(startPos);
+        GridObject endNode = grid.GetGridObject(endPos);
 
-        openList = new List<Node> { startNode};
-        closeList = new List<Node>();
+        openList = new List<GridObject> { startNode};
+        closeList = new List<GridObject>();
 
         for (int x = 0; x < grid.width; x++)
         {
             for (int y = 0; y < grid.height; y++)
             {
-                Node node = grid.GetGridObject(x, y);
+                GridObject node = grid.GetGridObject(x, y);
                 node.gCost = int.MaxValue;
                 node.CalculateFCost();
                 node.cameFromNode = null;
@@ -61,12 +61,12 @@ public class Pathfinding
         }
 
         startNode.gCost = 0;
-        startNode.hCost = CalculateDistanceCost(startNode, endNode);
+        startNode.hCost = CalculateDistanceCost(startNode.GetGridPosition(), endNode.GetGridPosition());
         startNode.CalculateFCost();
 
         while(openList.Count > 0)
         {
-            Node currentNode = GetLowestFCostNode(openList);
+            GridObject currentNode = GetLowestFCostNode(openList);
             if(currentNode == endNode)
             {
                 return CalculatePath(endNode);
@@ -75,18 +75,23 @@ public class Pathfinding
             openList.Remove(currentNode);
             closeList.Add(currentNode);
 
-            foreach (Node n in currentNode.neighbors)
+            foreach (GridObject n in currentNode.neighbors)
             {
                 if(closeList.Contains(n))
                 {
                     continue; 
                 }
-                int tempGCost = currentNode.gCost + CalculateDistanceCost(currentNode, n);
+
+                if(n.HasUnit())
+                {
+                    continue;
+                }
+                int tempGCost = currentNode.gCost + CalculateDistanceCost(currentNode.GetGridPosition(), n.GetGridPosition());
                 if(tempGCost < n.gCost)
                 {
                     n.cameFromNode = currentNode;
                     n.gCost = tempGCost;
-                    n.hCost = CalculateDistanceCost(n, endNode);
+                    n.hCost = CalculateDistanceCost(currentNode.GetGridPosition(), n.GetGridPosition());
                     n.CalculateFCost();
 
                     if(!openList.Contains(n))
@@ -101,17 +106,17 @@ public class Pathfinding
         return null;
     }
 
-    private int CalculateDistanceCost(Node a, Node b)
+    private int CalculateDistanceCost(GridPosition a, GridPosition b)
     {
-        int xDistance = Mathf.Abs(a.pos.x - b.pos.x);
-        int yDistance = Mathf.Abs(a.pos.y - b.pos.y);
+        int xDistance = Mathf.Abs(a.x - b.x);
+        int yDistance = Mathf.Abs(a.y - b.y);
         int remaining = Mathf.Abs(xDistance - yDistance);
         return Mathf.Min(xDistance, yDistance) + 10 * remaining;
     } 
 
-    private Node GetLowestFCostNode(List<Node> nodeList)
+    private GridObject GetLowestFCostNode(List<GridObject> nodeList)
     {
-        Node lowestFCostNode = nodeList[0];
+        GridObject lowestFCostNode = nodeList[0];
         for(int i = 1; i < nodeList.Count;i++)
         {
             if(nodeList[i].fCost < lowestFCostNode.fCost)
@@ -122,11 +127,11 @@ public class Pathfinding
         return lowestFCostNode;
     }
 
-    private List<Node> CalculatePath(Node endNode)
+    private List<GridObject> CalculatePath(GridObject endNode)
     {
-        List<Node> path = new List<Node>();
+        List<GridObject> path = new List<GridObject>();
         path.Add(endNode);
-        Node currentNode = endNode;
+        GridObject currentNode = endNode;
         while(currentNode.cameFromNode != null)
         {
             path.Add(currentNode.cameFromNode);
@@ -136,26 +141,27 @@ public class Pathfinding
         return path; 
     }
 
-    private List<Node> GetNeighborList(Node node)
+    private List<GridObject> GetNeighborList(GridObject node)
     {
-        List<Node> neighborList = new List<Node>();
-        if(node.pos.x - 1 >= 0)
+        List<GridObject> neighborList = new List<GridObject>();
+        GridPosition gridPosition = node.GetGridPosition();
+        if(gridPosition.x - 1 >= 0)
         {
             //left
-            neighborList.Add(grid.GetGridObject(node.pos.x - 1, node.pos.y));
+            neighborList.Add(grid.GetGridObject(gridPosition.x - 1, gridPosition.y));
         }
-        if(node.pos.x + 1 < grid.width)
+        if(gridPosition.x + 1 < grid.width)
         {
-            neighborList.Add(grid.GetGridObject(node.pos.x + 1, node.pos.y));
+            neighborList.Add(grid.GetGridObject(gridPosition.x + 1, gridPosition.y));
         }
-        if (node.pos.y - 1 >= 0)
+        if (gridPosition.y - 1 >= 0)
         {
             //left
-            neighborList.Add(grid.GetGridObject(node.pos.x, node.pos.y - 1));
+            neighborList.Add(grid.GetGridObject(gridPosition.x, gridPosition.y - 1));
         }
-        if (node.pos.y + 1 < grid.height)
+        if (gridPosition.y + 1 < grid.height)
         {
-            neighborList.Add(grid.GetGridObject(node.pos.x, node.pos.y + 1));
+            neighborList.Add(grid.GetGridObject(gridPosition.x, gridPosition.y + 1));
         }
 
         return neighborList;

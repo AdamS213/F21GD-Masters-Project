@@ -51,12 +51,16 @@ public abstract class BaseAction : MonoBehaviour
 
         foreach (GridPosition gridPosition in validActionPostionList)
         {
+            if(!isValidActionGridPosition(gridPosition))
+            {
+                continue;
+            }
             EnemyAiAction enemyAiAction = GetEnemyAiAction(gridPosition);
             enemyAiActionList.Add(enemyAiAction);
         }
         if (enemyAiActionList.Count > 0)
         {
-            enemyAiActionList.Sort((EnemyAiAction a, EnemyAiAction b) => b.ActionValue - a.ActionValue);
+            enemyAiActionList.Sort((EnemyAiAction a, EnemyAiAction b) => b.actionValue.CompareTo(a.actionValue));
             return enemyAiActionList[0];
         } else
         {
